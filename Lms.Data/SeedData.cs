@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Lms.Core.Entities;
 using Lms.Data.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,17 @@ namespace Lms.Data
     public class SeedData
     {
         private static LmsApiContext db = default!;
+
         public static async Task InitAsync(LmsApiContext context)
         {
             ArgumentNullException.ThrowIfNull(nameof(context));
             db = context;
 
+            if(await db.Course.AnyAsync()) return;
+
             var courses = GetFakeCourses(10);
             await db.AddRangeAsync(courses);
             await db.SaveChangesAsync();
-
         }
 
         private static ICollection<Course> GetFakeCourses(int quantity)
