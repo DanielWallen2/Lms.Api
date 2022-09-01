@@ -54,19 +54,35 @@ namespace Lms.Api.Controllers
         // POST: api/Courses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //public async Task<ActionResult<Course>> PostCourse(CourseDto courseDto)
         public async Task<ActionResult<CourseDto>> PostCourse(CourseDto courseDto)
         {
             if (db.Course == null) return Problem("Entity set 'LmsApiContext.Course' is null.");
 
-            //db.Course.Add(course);
-            //await db.SaveChangesAsync();
             var course = mapper.Map<Course>(courseDto);
             uow.CourseRepository.Add(course);
             await uow.CompleteAsync();
 
             return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, courseDto);
         }
+
+        // DELETE: api/Courses/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCourse(int id)
+        {
+            if (db.Course == null) return NotFound();
+
+            var course = uow.CourseRepository.FindAsync(id);
+            uow.CourseRepository.Remove(course);
+
+            if (course == null) return NotFound();
+
+            //var course = await db.Course.FindAsync(id);
+            //db.Course.Remove(course);
+            //await db.SaveChangesAsync();
+
+            return NoContent();
+        }
+
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -98,25 +114,6 @@ namespace Lms.Api.Controllers
         }
 
 
-        // DELETE: api/Courses/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCourse(int id)
-        {
-            if (db.Course == null)
-            {
-                return NotFound();
-            }
-            var course = await db.Course.FindAsync(id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            db.Course.Remove(course);
-            await db.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool CourseExists(int id)
         {

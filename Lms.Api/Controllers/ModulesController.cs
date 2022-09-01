@@ -14,7 +14,7 @@ using Lms.Core.Dto;
 
 namespace Lms.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/modules")]
     [ApiController]
     public class ModulesController : ControllerBase
     {
@@ -41,15 +41,48 @@ namespace Lms.Api.Controllers
 
         // GET: api/Modules/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Module>> GetModule(int id)
+        public async Task<ActionResult<ModuleDto>> GetModule(int id)
         {
             if(db.Module == null) return NotFound();
 
             var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModule(id));
-
             if (moduleDto == null) return NotFound();
 
             return Ok(moduleDto);
+        }
+
+        // POST: api/Modules
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<ModuleDto>> PostModule(ModuleDto moduleDto)
+        {
+            if (db.Module == null) return Problem("Entity set 'LmsApiContext.Module'  is null.");
+
+            var module = mapper.Map<Module>(moduleDto);
+            uow.ModuleRepository.Add(module);
+            await uow.CompleteAsync();
+
+            return CreatedAtAction(nameof(GetModule), new { id = module.Id }, moduleDto);
+        }
+
+        // DELETE: api/Modules/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteModule(int id)
+        {
+            if (db.Module == null)
+            {
+                return NotFound();
+            }
+            var @module = await db.Module.FindAsync(id);
+            if (@module == null)
+            {
+                return NotFound();
+            }
+
+            db.Module.Remove(@module);
+            await db.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // PUT: api/Modules/5
@@ -83,40 +116,6 @@ namespace Lms.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Modules
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Module>> PostModule(Module @module)
-        {
-          if (db.Module == null)
-          {
-              return Problem("Entity set 'LmsApiContext.Module'  is null.");
-          }
-            db.Module.Add(@module);
-            await db.SaveChangesAsync();
-
-            return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
-        }
-
-        // DELETE: api/Modules/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteModule(int id)
-        {
-            if (db.Module == null)
-            {
-                return NotFound();
-            }
-            var @module = await db.Module.FindAsync(id);
-            if (@module == null)
-            {
-                return NotFound();
-            }
-
-            db.Module.Remove(@module);
-            await db.SaveChangesAsync();
-
-            return NoContent();
-        }
 
         private bool ModuleExists(int id)
         {

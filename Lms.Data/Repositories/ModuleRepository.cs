@@ -35,12 +35,12 @@ namespace Lms.Data.Repositories
             db.Module.Add(course);
         }
 
-        public Task<bool> AnyAsync(int? id)
+        public Task<Module> FindAsync(int? id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Module> FindAsync(int? id)
+        public Task<bool> AnyAsync(int? id)
         {
             throw new NotImplementedException();
         }

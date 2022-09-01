@@ -53,12 +53,12 @@ namespace Lms.Data.Repositories
             return await db.Course.FindAsync(id);
         }
 
-        public Task<bool> AnyAsync(int? id)
+        public void Remove(Course course)
         {
-            throw new NotImplementedException();
+            db.Remove(course);
         }
 
-        public void Remove(Course course)
+        public Task<bool> AnyAsync(int? id)
         {
             throw new NotImplementedException();
         }
