@@ -20,16 +20,32 @@ namespace Lms.Data.Repositories
             db = context;
         }
 
-        public async Task<IEnumerable<Course>> GetAllCourses()
+        public async Task<IEnumerable<Course>> GetAllCourses(bool includeModules)
         {
-            return await db.Course.ToListAsync();
+            return includeModules ? 
+                await db.Course.Include(c => c.Modules).ToListAsync() :
+                await db.Course.ToListAsync();
         }
 
-        public async Task<Course> GetCourse(int? id)
+        public async Task<Course> GetCourse(int? id, bool includeModules)
         {
             if(id == null) throw new ArgumentNullException("id");
-            return await db.Course.FirstOrDefaultAsync(c => c.Id == id);
+
+            return includeModules ?
+                await db.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == id) :
+                await db.Course.FirstOrDefaultAsync(c => c.Id == id);
         }
+
+        public void Add(Course course)
+        {
+            db.Course.Add(course);
+        }
+
+        //public async Task AddAsync(Course course)
+        //{
+        //    //await db.Course.AddAsync(course);     ?
+        //    await db.AddAsync(course);
+        //}
 
         public async Task<Course> FindAsync(int? id)
         {
@@ -37,18 +53,10 @@ namespace Lms.Data.Repositories
             return await db.Course.FindAsync(id);
         }
 
-        public void Add(Course course)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> AnyAsync(int? id)
         {
             throw new NotImplementedException();
         }
-
-        
-
 
         public void Remove(Course course)
         {

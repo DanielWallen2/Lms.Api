@@ -31,24 +31,41 @@ namespace Lms.Api.Controllers
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourse()
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourse(bool includeModules = false)
         {
             if (db.Course == null) return NotFound();
 
-            var coursesDto = mapper.Map<IEnumerable<CourseDto>>(await uow.CourseRepository.GetAllCourses());
+            var coursesDto = mapper.Map<IEnumerable<CourseDto>>(await uow.CourseRepository.GetAllCourses(includeModules));
             return Ok(coursesDto);
         }
 
         // GET: api/Courses/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Course>> GetCourse(int id)
+        public async Task<ActionResult<CourseDto>> GetCourse(int id, bool includeModules = false)
         {
             if(db.Course == null) return NotFound();
 
-            var coursesDto = mapper.Map<CourseDto>(await uow.CourseRepository.GetCourse(id));
+            var coursesDto = mapper.Map<CourseDto>(await uow.CourseRepository.GetCourse(id, includeModules));
             if (coursesDto == null) return NotFound();
 
             return Ok(coursesDto);
+        }
+
+        // POST: api/Courses
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        //public async Task<ActionResult<Course>> PostCourse(CourseDto courseDto)
+        public async Task<ActionResult<CourseDto>> PostCourse(CourseDto courseDto)
+        {
+            if (db.Course == null) return Problem("Entity set 'LmsApiContext.Course' is null.");
+
+            //db.Course.Add(course);
+            //await db.SaveChangesAsync();
+            var course = mapper.Map<Course>(courseDto);
+            uow.CourseRepository.Add(course);
+            await uow.CompleteAsync();
+
+            return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, courseDto);
         }
 
         // PUT: api/Courses/5
@@ -80,20 +97,6 @@ namespace Lms.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Courses
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Course>> PostCourse(Course course)
-        {
-          if (db.Course == null)
-          {
-              return Problem("Entity set 'LmsApiContext.Course'  is null.");
-          }
-            db.Course.Add(course);
-            await db.SaveChangesAsync();
-
-            return CreatedAtAction("GetCourse", new { id = course.Id }, course);
-        }
 
         // DELETE: api/Courses/5
         [HttpDelete("{id}")]

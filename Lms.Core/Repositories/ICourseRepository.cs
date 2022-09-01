@@ -9,8 +9,8 @@ namespace Lms.Core.Repositories
 {
     public interface ICourseRepository
     {
-        public Task<IEnumerable<Course>> GetAllCourses();
-        public Task<Course> GetCourse(int? id);
+        public Task<IEnumerable<Course>> GetAllCourses(bool includeModules);
+        public Task<Course> GetCourse(int? id, bool includeModules);
         public Task<Course> FindAsync(int? id);
         public Task<bool> AnyAsync(int? id);
         public void Add(Course course);
