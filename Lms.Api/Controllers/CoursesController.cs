@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Lms.Data.Data;
 using Lms.Core.Entities;
 using Lms.Data.Repositories;
+using AutoMapper;
+using Lms.Core.Dto;
+using Lms.Core.Repositories;
 
 namespace Lms.Api.Controllers
 {
@@ -16,22 +19,24 @@ namespace Lms.Api.Controllers
     public class CoursesController : ControllerBase
     {
         private readonly LmsApiContext db;
-        private readonly UnitOfWork uow;
- 
-        public CoursesController(LmsApiContext context)
+        private readonly IUnitOfWork uow;
+        private readonly IMapper mapper;
+
+        public CoursesController(LmsApiContext context, IMapper mapper, IUnitOfWork uow)
         {
             db = context;
-            uow = new UnitOfWork(db);
+            this.uow = uow;
+            this.mapper = mapper;
         }
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourse()
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourse()
         {
             if (db.Course == null) return NotFound();
 
-            var courses = await uow.CourseRepository.GetAllCourses();
-            return Ok(courses);
+            var coursesDto = mapper.Map<IEnumerable<CourseDto>>(await uow.CourseRepository.GetAllCourses());
+            return Ok(coursesDto);
         }
 
         // GET: api/Courses/5
@@ -40,10 +45,10 @@ namespace Lms.Api.Controllers
         {
             if(db.Course == null) return NotFound();
 
-            var course = await uow.CourseRepository.GetCourse(id);
-            if(course == null) return NotFound();
+            var coursesDto = mapper.Map<CourseDto>(await uow.CourseRepository.GetCourse(id));
+            if (coursesDto == null) return NotFound();
 
-            return Ok(course);
+            return Ok(coursesDto);
         }
 
         // PUT: api/Courses/5

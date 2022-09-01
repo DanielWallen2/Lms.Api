@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lms.Core.Entities
+namespace Lms.Core.Dto
 {
-    public class Module
+    public class CourseDto
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public DateTime StartTime { get; set; }
-
-        //Foreign Key
-        public int CourseId { get; set; }
+        public DateTime EndTime
+        {
+            get { return StartTime.AddMonths(3); }
+        }
     }
 }

@@ -36,8 +36,8 @@ namespace Lms.Data
             {
                 var course = new Course
                 {
-                    Name = faker.Company.CatchPhrase(),
-                    StartDate = DateTime.Now.AddDays(rnd.Next(-2, 3)),
+                    Title = faker.Company.CatchPhrase(),
+                    StartTime = DateTime.Now.AddDays(rnd.Next(-2, 3)),
                     Modules = GetFakeModules(2)
 
                 };
@@ -59,7 +59,7 @@ namespace Lms.Data
                 var module = new Module
                 {
                     Title = faker.Hacker.IngVerb(),
-                    StartDate = DateTime.Now.AddDays(rnd.Next(-2, 3))
+                    StartTime = DateTime.Now.AddDays(rnd.Next(-2, 3))
                 };
 
                 modules.Add(module);

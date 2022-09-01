@@ -9,8 +9,8 @@ namespace Lms.Core.Entities
     public class Course
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime StartDate { get; set; }
+        public string Title { get; set; }
+        public DateTime StartTime { get; set; }
         
         // Navigation Properties
         public ICollection<Module>? Modules { get; set; }
