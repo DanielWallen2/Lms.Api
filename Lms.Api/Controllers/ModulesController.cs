@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Lms.Data.Data;
 using Lms.Core.Entities;
 using Lms.Data.Repositories;
+using AutoMapper;
+using Lms.Core.Repositories;
+using Lms.Core.Dto;
 
 namespace Lms.Api.Controllers
 {
@@ -15,41 +18,38 @@ namespace Lms.Api.Controllers
     [ApiController]
     public class ModulesController : ControllerBase
     {
-        private readonly LmsApiContext _context;
-        private readonly UnitOfWork uow;
+        private readonly LmsApiContext db;
+        private readonly IUnitOfWork uow;
+        private readonly IMapper mapper;
 
-        public ModulesController(LmsApiContext context)
+        public ModulesController(LmsApiContext context, IMapper mapper, IUnitOfWork uow)
         {
-            _context = context;
+            db = context;
+            this.uow = uow;
+            this.mapper = mapper;
         }
 
         // GET: api/Modules
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Module>>> GetModule()
         {
-          if (_context.Module == null)
-          {
-              return NotFound();
-          }
-            return await _context.Module.ToListAsync();
+            if(db.Module == null) return NotFound();
+
+            var modulesDto = mapper.Map<IEnumerable<ModuleDto>>(await uow.ModuleRepository.GetAllModules());
+            return Ok(modulesDto);
         }
 
         // GET: api/Modules/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Module>> GetModule(int id)
         {
-          if (_context.Module == null)
-          {
-              return NotFound();
-          }
-            var @module = await _context.Module.FindAsync(id);
+            if(db.Module == null) return NotFound();
 
-            if (@module == null)
-            {
-                return NotFound();
-            }
+            var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModule(id));
 
-            return @module;
+            if (moduleDto == null) return NotFound();
+
+            return Ok(moduleDto);
         }
 
         // PUT: api/Modules/5
@@ -62,11 +62,11 @@ namespace Lms.Api.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(@module).State = EntityState.Modified;
+            db.Entry(@module).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -88,12 +88,12 @@ namespace Lms.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Module>> PostModule(Module @module)
         {
-          if (_context.Module == null)
+          if (db.Module == null)
           {
               return Problem("Entity set 'LmsApiContext.Module'  is null.");
           }
-            _context.Module.Add(@module);
-            await _context.SaveChangesAsync();
+            db.Module.Add(@module);
+            await db.SaveChangesAsync();
 
             return CreatedAtAction("GetModule", new { id = @module.Id }, @module);
         }
@@ -102,25 +102,25 @@ namespace Lms.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            if (_context.Module == null)
+            if (db.Module == null)
             {
                 return NotFound();
             }
-            var @module = await _context.Module.FindAsync(id);
+            var @module = await db.Module.FindAsync(id);
             if (@module == null)
             {
                 return NotFound();
             }
 
-            _context.Module.Remove(@module);
-            await _context.SaveChangesAsync();
+            db.Module.Remove(@module);
+            await db.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ModuleExists(int id)
         {
-            return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (db.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
