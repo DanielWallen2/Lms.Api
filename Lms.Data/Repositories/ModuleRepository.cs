@@ -30,24 +30,23 @@ namespace Lms.Data.Repositories
             return await db.Module.FirstOrDefaultAsync(c => c.Id == id);
         }
         
-        public void Add(Module course)
+        public async Task AddAsync(Module module)
         {
-            db.Module.Add(course);
+            await db.Module.AddAsync(module);
         }
 
-        public Task<Module> FindAsync(int? id)
+        public async Task<Module> FindAsync(int? id)
         {
-            throw new NotImplementedException();
+            if (id == null) throw new ArgumentNullException("id");
+            return await db.Module.FindAsync(id);
+        }
+
+        public async Task RemoveAsync(Module module)
+        {
+            db.Module.Remove(module);
         }
 
         public Task<bool> AnyAsync(int? id)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        public void Remove(Module course)
         {
             throw new NotImplementedException();
         }

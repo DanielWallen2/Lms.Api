@@ -39,7 +39,6 @@ namespace Lms.Data.Repositories
         public async Task AddAsync(Course course)
         {
             await db.Course.AddAsync(course);
-            //await db.AddAsync(course);
         }
 
         public async Task<Course> FindAsync(int? id)
@@ -48,9 +47,9 @@ namespace Lms.Data.Repositories
             return await db.Course.FindAsync(id);
         }
 
-        public void Remove(Course course)
+        public async Task RemoveAsync(Course course)
         {
-            db.Remove(course);
+            db.Course.Remove(course);
         }
 
         public Task<bool> AnyAsync(int? id)

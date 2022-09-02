@@ -59,7 +59,7 @@ namespace Lms.Api.Controllers
             if (db.Module == null) return Problem("Entity set 'LmsApiContext.Module'  is null.");
 
             var module = mapper.Map<Module>(moduleDto);
-            uow.ModuleRepository.Add(module);
+            await uow.ModuleRepository.AddAsync(module);
             await uow.CompleteAsync();
 
             return CreatedAtAction(nameof(GetModule), new { id = module.Id }, moduleDto);
@@ -72,12 +72,10 @@ namespace Lms.Api.Controllers
             if (db.Module == null) return NotFound();
 
             var module = await uow.ModuleRepository.FindAsync(id);
-            uow.ModuleRepository.Remove(module);
-
             if (module == null) return NotFound();
 
-            db.Module.Remove(@module);
-            await db.SaveChangesAsync();
+            await uow.ModuleRepository.RemoveAsync(module);
+            await uow.CompleteAsync();
 
             return NoContent();
         }
@@ -87,10 +85,7 @@ namespace Lms.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutModule(int id, Module @module)
         {
-            if (id != @module.Id)
-            {
-                return BadRequest();
-            }
+            if (id != @module.Id) return BadRequest();
 
             db.Entry(@module).State = EntityState.Modified;
 

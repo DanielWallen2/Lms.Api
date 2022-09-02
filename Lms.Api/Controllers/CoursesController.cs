@@ -74,7 +74,7 @@ namespace Lms.Api.Controllers
             var course = await uow.CourseRepository.FindAsync(id);
             if (course == null) return NotFound();
 
-            uow.CourseRepository.Remove(course);
+            await uow.CourseRepository.RemoveAsync(course);
             await uow.CompleteAsync();
 
             return NoContent();
@@ -86,7 +86,6 @@ namespace Lms.Api.Controllers
         public async Task<IActionResult> PutCourse(int id, Course course)
         {
             if (id != course.Id) return BadRequest();
-
 
             db.Entry(course).State = EntityState.Modified;
 

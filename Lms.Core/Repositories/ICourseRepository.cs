@@ -15,6 +15,6 @@ namespace Lms.Core.Repositories
         public Task<bool> AnyAsync(int? id);
         public Task AddAsync(Course course);
         public void Update(Course course);
-        public void Remove(Course course);
+        public Task RemoveAsync(Course course);
     }
 }
