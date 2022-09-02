@@ -88,7 +88,7 @@ namespace Lms.Api.Controllers
             var module = await uow.ModuleRepository.FindAsync(id);
             if (module == null) return NotFound();
 
-            mapper.Map(module, moduleDto);
+            mapper.Map(moduleDto, module);
             await uow.CompleteAsync();
 
             return Ok(mapper.Map<ModuleDto>(module));

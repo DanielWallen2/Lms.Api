@@ -73,7 +73,7 @@ namespace Lms.Api.Controllers
 
             var course = await uow.CourseRepository.FindAsync(id);
             if (course == null) return NotFound();
-
+            
             await uow.CourseRepository.RemoveAsync(course);
             await uow.CompleteAsync();
 
@@ -88,7 +88,7 @@ namespace Lms.Api.Controllers
             var course = await uow.CourseRepository.FindAsync(id);
             if(course == null) return NotFound();
 
-            mapper.Map(course, courseDto);
+            mapper.Map(courseDto, course);
             await uow.CompleteAsync();
 
             return Ok(mapper.Map<CourseDto>(course));

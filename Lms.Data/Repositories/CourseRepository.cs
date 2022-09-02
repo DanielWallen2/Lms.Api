@@ -59,8 +59,7 @@ namespace Lms.Data.Repositories
 
         public void Update(Course course)
         {
-            
-
+            throw new NotImplementedException();
         }
     }
 }
