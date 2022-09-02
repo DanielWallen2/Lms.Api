@@ -69,15 +69,12 @@ namespace Lms.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            if (db.Module == null)
-            {
-                return NotFound();
-            }
-            var @module = await db.Module.FindAsync(id);
-            if (@module == null)
-            {
-                return NotFound();
-            }
+            if (db.Module == null) return NotFound();
+
+            var module = await uow.ModuleRepository.FindAsync(id);
+            uow.ModuleRepository.Remove(module);
+
+            if (module == null) return NotFound();
 
             db.Module.Remove(@module);
             await db.SaveChangesAsync();

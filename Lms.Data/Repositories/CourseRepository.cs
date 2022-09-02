@@ -36,16 +36,11 @@ namespace Lms.Data.Repositories
                 await db.Course.FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public void Add(Course course)
+        public async Task AddAsync(Course course)
         {
-            db.Course.Add(course);
+            await db.Course.AddAsync(course);
+            //await db.AddAsync(course);
         }
-
-        //public async Task AddAsync(Course course)
-        //{
-        //    //await db.Course.AddAsync(course);     ?
-        //    await db.AddAsync(course);
-        //}
 
         public async Task<Course> FindAsync(int? id)
         {

@@ -59,7 +59,7 @@ namespace Lms.Api.Controllers
             if (db.Course == null) return Problem("Entity set 'LmsApiContext.Course' is null.");
 
             var course = mapper.Map<Course>(courseDto);
-            uow.CourseRepository.Add(course);
+            await uow.CourseRepository.AddAsync(course);
             await uow.CompleteAsync();
 
             return CreatedAtAction(nameof(GetCourse), new { id = course.Id }, courseDto);
@@ -71,18 +71,14 @@ namespace Lms.Api.Controllers
         {
             if (db.Course == null) return NotFound();
 
-            var course = uow.CourseRepository.FindAsync(id);
-            uow.CourseRepository.Remove(course);
-
+            var course = await uow.CourseRepository.FindAsync(id);
             if (course == null) return NotFound();
 
-            //var course = await db.Course.FindAsync(id);
-            //db.Course.Remove(course);
-            //await db.SaveChangesAsync();
+            uow.CourseRepository.Remove(course);
+            await uow.CompleteAsync();
 
             return NoContent();
         }
-
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
