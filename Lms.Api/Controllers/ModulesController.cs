@@ -18,13 +18,13 @@ namespace Lms.Api.Controllers
     [ApiController]
     public class ModulesController : ControllerBase
     {
-        private readonly LmsApiContext db;
+        //private readonly LmsApiContext db;
         private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
 
-        public ModulesController(LmsApiContext context, IMapper mapper, IUnitOfWork uow)
+        public ModulesController(/*LmsApiContext context,*/ IMapper mapper, IUnitOfWork uow)
         {
-            db = context;
+            //db = context;
             this.uow = uow;
             this.mapper = mapper;
         }
@@ -43,7 +43,7 @@ namespace Lms.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ModuleDto>> GetModule(int id)
         {
-            if(db.Module == null) return NotFound();
+            if(uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
 
             var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModule(id));
             if (moduleDto == null) return NotFound();
@@ -56,7 +56,7 @@ namespace Lms.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<ModuleDto>> PostModule(ModuleDto moduleDto)
         {
-            if (db.Module == null) return Problem("Entity set 'LmsApiContext.Module'  is null.");
+            if (uow.ModuleRepository.CheckIfDbIsNull()) return Problem("Entity set 'LmsApiContext.Module'  is null.");
 
             var module = mapper.Map<Module>(moduleDto);
             await uow.ModuleRepository.AddAsync(module);
@@ -69,7 +69,7 @@ namespace Lms.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteModule(int id)
         {
-            if (db.Module == null) return NotFound();
+            if (uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
 
             var module = await uow.ModuleRepository.FindAsync(id);
             if (module == null) return NotFound();
