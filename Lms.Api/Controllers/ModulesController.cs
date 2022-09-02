@@ -33,7 +33,7 @@ namespace Lms.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Module>>> GetModule()
         {
-            if(db.Module == null) return NotFound();
+            if(uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
 
             var modulesDto = mapper.Map<IEnumerable<ModuleDto>>(await uow.ModuleRepository.GetAllModules());
             return Ok(modulesDto);
@@ -93,34 +93,12 @@ namespace Lms.Api.Controllers
 
             return Ok(mapper.Map<ModuleDto>(module));
 
-
-            //if (id != @module.Id) return BadRequest();
-
-            //db.Entry(@module).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await db.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!ModuleExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
         }
 
 
-        private bool ModuleExists(int id)
-        {
-            return (db.Module?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        //private bool ModuleExists(int id)
+        //{
+        //    return (db.Module?.Any(e => e.Id == id)).GetValueOrDefault();
+        //}
     }
 }

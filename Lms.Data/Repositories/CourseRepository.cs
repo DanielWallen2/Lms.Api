@@ -52,6 +52,11 @@ namespace Lms.Data.Repositories
             db.Course.Remove(course);
         }
 
+        public bool CheckIfDbIsNull()
+        {
+            return (db.Course == null);
+        }
+
         public Task<bool> AnyAsync(int? id)
         {
             throw new NotImplementedException();

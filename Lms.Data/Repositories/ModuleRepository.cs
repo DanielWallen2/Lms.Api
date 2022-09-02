@@ -45,6 +45,10 @@ namespace Lms.Data.Repositories
         {
             db.Module.Remove(module);
         }
+        public bool CheckIfDbIsNull()
+        {
+            return (db.Module == null);
+        }
 
         public Task<bool> AnyAsync(int? id)
         {

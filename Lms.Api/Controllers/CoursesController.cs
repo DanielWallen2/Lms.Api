@@ -18,13 +18,13 @@ namespace Lms.Api.Controllers
     [ApiController]
     public class CoursesController : ControllerBase
     {
-        private readonly LmsApiContext db;
+        //private readonly LmsApiContext db;
         private readonly IUnitOfWork uow;
         private readonly IMapper mapper;
 
-        public CoursesController(LmsApiContext context, IMapper mapper, IUnitOfWork uow)
+        public CoursesController(/*LmsApiContext context,*/ IMapper mapper, IUnitOfWork uow)
         {
-            db = context;
+            //db = context;
             this.uow = uow;
             this.mapper = mapper;
         }
@@ -33,7 +33,7 @@ namespace Lms.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CourseDto>>> GetCourse(bool includeModules = false)
         {
-            if (db.Course == null) return NotFound();
+            if(uow.CourseRepository.CheckIfDbIsNull()) return NotFound();
 
             var coursesDto = mapper.Map<IEnumerable<CourseDto>>(await uow.CourseRepository.GetAllCourses(includeModules));
             return Ok(coursesDto);
@@ -43,7 +43,7 @@ namespace Lms.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CourseDto>> GetCourse(int id, bool includeModules = false)
         {
-            if(db.Course == null) return NotFound();
+            if (uow.CourseRepository.CheckIfDbIsNull()) return NotFound();
 
             var coursesDto = mapper.Map<CourseDto>(await uow.CourseRepository.GetCourse(id, includeModules));
             if (coursesDto == null) return NotFound();
@@ -56,7 +56,9 @@ namespace Lms.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CourseDto>> PostCourse(CourseDto courseDto)
         {
-            if (db.Course == null) return Problem("Entity set 'LmsApiContext.Course' is null.");
+            // Varför är en tom db ett problem vid post?
+            if (uow.CourseRepository.CheckIfDbIsNull()) 
+                return Problem("Entity set 'LmsApiContext.Course' is null.");
 
             var course = mapper.Map<Course>(courseDto);
             await uow.CourseRepository.AddAsync(course);
@@ -69,7 +71,7 @@ namespace Lms.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
-            if (db.Course == null) return NotFound();
+            if(uow.CourseRepository.CheckIfDbIsNull()) return NotFound();
 
             var course = await uow.CourseRepository.FindAsync(id);
             if (course == null) return NotFound();
@@ -92,36 +94,12 @@ namespace Lms.Api.Controllers
             await uow.CompleteAsync();
 
             return Ok(mapper.Map<CourseDto>(course));
-
-
-            //if (id != course.Id) return BadRequest();
-
-            //db.Entry(course).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await db.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!CourseExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
         }
 
 
-
-        private bool CourseExists(int id)
-        {
-            return (db.Course?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        //private bool CourseExists(int id)
+        //{
+        //    return (db.Course?.Any(e => e.Id == id)).GetValueOrDefault();
+        //}
     }
 }

@@ -16,5 +16,6 @@ namespace Lms.Core.Repositories
         public Task AddAsync(Module course);
         public void Update(Module course);
         public Task RemoveAsync(Module course);
+        public bool CheckIfDbIsNull();
     }
 }
