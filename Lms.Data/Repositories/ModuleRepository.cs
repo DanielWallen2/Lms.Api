@@ -24,12 +24,18 @@ namespace Lms.Data.Repositories
             return await db.Module.ToListAsync();
         }
 
-        public async Task<Module> GetModule(int? id)
+        public async Task<Module?> GetModule(int? id)
         {
             if (id == null) throw new ArgumentNullException("id");
             return await db.Module.FirstOrDefaultAsync(c => c.Id == id);
         }
-        
+
+        public async Task<Module?> GetModuleByTitle(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException("title");
+            return await db.Module.FirstOrDefaultAsync(m => m.Title == title);
+        }
+
         public async Task AddAsync(Module module)
         {
             await db.Module.AddAsync(module);

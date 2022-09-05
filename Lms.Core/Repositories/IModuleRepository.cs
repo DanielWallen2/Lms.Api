@@ -11,6 +11,7 @@ namespace Lms.Core.Repositories
     {
         public Task<IEnumerable<Module>> GetAllModules();
         public Task<Module> GetModule(int? id);
+        public Task<Module> GetModuleByTitle(string title);
         public Task<Module> FindAsync(int? id);
         public Task<bool> AnyAsync(int? id);
         public Task AddAsync(Module course);

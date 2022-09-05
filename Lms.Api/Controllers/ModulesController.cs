@@ -40,17 +40,30 @@ namespace Lms.Api.Controllers
             return Ok(modulesDto);
         }
 
-        // GET: api/Modules/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ModuleDto>> GetModule(int id)
+        // GET: api/Modules/Title
+        [HttpGet("{title}")]
+        public async Task<ActionResult<ModuleDto>> GetModule(string title)
         {
-            if(uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
+            if (uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
 
-            var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModule(id));
+            var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModuleByTitle(title));
             if (moduleDto == null) return NotFound();
 
             return Ok(moduleDto);
         }
+
+        //// GET: api/Modules/Name
+        //[HttpGet("title/{title:string}")]
+        //[HttpGet("id/{id:int}")]
+        //public async Task<ActionResult<ModuleDto>> GetModule(string title, int id)
+        //{
+        //    if (uow.ModuleRepository.CheckIfDbIsNull()) return NotFound();
+
+        //    var moduleDto = mapper.Map<ModuleDto>(await uow.ModuleRepository.GetModuleByTitle(title));
+        //    if (moduleDto == null) return NotFound();
+
+        //    return Ok(moduleDto);
+        //}
 
         // POST: api/Modules
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
