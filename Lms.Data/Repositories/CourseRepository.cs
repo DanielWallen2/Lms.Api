@@ -27,7 +27,7 @@ namespace Lms.Data.Repositories
                 await db.Course.ToListAsync();
         }
 
-        public async Task<Course> GetCourse(int? id, bool includeModules)
+        public async Task<Course?> GetCourse(int? id, bool includeModules)
         {
             if(id == null) throw new ArgumentNullException("id");
 

@@ -11,6 +11,7 @@ using Lms.Data.Repositories;
 using AutoMapper;
 using Lms.Core.Dto;
 using Lms.Core.Repositories;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Lms.Api.Controllers
 {
@@ -95,6 +96,26 @@ namespace Lms.Api.Controllers
 
             return Ok(mapper.Map<CourseDto>(course));
         }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<CourseDto>> PatchCourse(int id, JsonPatchDocument<CourseDto> patchDocument)
+        {
+            if (uow.CourseRepository.CheckIfDbIsNull()) return NotFound();
+
+            var course = await uow.CourseRepository.FindAsync(id);
+            if (course == null) return NotFound();
+
+            var courseDto = mapper.Map<CourseDto>(course);
+
+            patchDocument.ApplyTo(courseDto, ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            mapper.Map(courseDto, course);
+            await uow.CompleteAsync();
+
+            return Ok(mapper.Map<CourseDto>(course));       // varför Map? Varför inte courseDto
+        }
+
 
 
         //private bool CourseExists(int id)
